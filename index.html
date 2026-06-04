@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第53回 苗代校下社会体育大会 特設サイト</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sports: {
+                            blue: '#0F172A',     /* 深いネイビー（信頼・洗練） */
+                            brand: '#FF6B00',    /* 鮮烈なオレンジ（躍動・情熱） */
+                            accent: '#10B981',   /* エメラルド（健康・芝生） */
+                            light: '#F8FAFC'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts & Lucide Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #F8FAFC;
+        }
+        /* スムーズなアニメーション用 */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .fade-in.appear {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* カスタムスクロールバー */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F1F5F9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased overflow-x-hidden">
+
+    <!-- 1. トップ緊急告知バー (当日朝にパッと確認できる切り替え機能付き) -->
+    <div id="announcement-bar" class="bg-sports-brand text-white px-4 py-2.5 text-center text-sm font-bold shadow-md transition-all duration-300 relative z-50">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-2">
+            <span class="inline-flex items-center bg-white text-sports-brand text-[10px] px-2 py-0.5 rounded-full font-black uppercase tracking-wider animate-pulse">
+                <i class="fa-solid fa-bullhorn mr-1"></i> 速報
+            </span>
+            <span id="announcement-text">【開催可否】本日の第53回体育大会は、予定通り「苗代小学校グラウンド」にて開催いたします！ (朝6:00判定)</span>
+            <button onclick="toggleAnnouncement()" class="text-xs bg-black/20 hover:bg-black/30 px-2 py-1 rounded transition ml-2">
+                表示を切り替え
+            </button>
+        </div>
+    </div>
+
+    <!-- 2. ヘッダーナビゲーション -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md shadow-sm border-b border-slate-100 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
+            <!-- ロゴエリア -->
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-tr from-sports-brand to-amber-500 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-md group-hover:rotate-6 transition-transform">
+                    苗
+                </div>
+                <div>
+                    <h1 class="text-base sm:text-lg font-black text-sports-blue tracking-tight leading-none">苗代校下社会体育大会</h1>
+                    <span class="text-[10px] sm:text-xs text-slate-500 font-medium tracking-widest mt-1 block">NOSHIRO SPORTS DAY SPECIAL SITE</span>
+                </div>
+            </a>
+
+            <!-- デスクトップメニュー -->
+            <nav class="hidden md:flex items-center gap-1">
+                <a href="#about" class="px-3 py-2 text-sm font-bold text-slate-600 hover:text-sports-brand rounded-lg transition-colors">大会について</a>
+                <a href="#news" class="px-3 py-2 text-sm font-bold text-slate-600 hover:text-sports-brand rounded-lg transition-colors">お知らせ</a>
+                <a href="#program" class="px-3 py-2 text-sm font-bold text-slate-600 hover:text-sports-brand rounded-lg transition-colors">プログラム</a>
+                <a href="#map" class="px-3 py-2 text-sm font-bold text-slate-600 hover:text-sports-brand rounded-lg transition-colors">会場案内</a>
+                <a href="#precautions" class="px-3 py-2 text-sm font-bold text-slate-600 hover:text-sports-brand rounded-lg transition-colors">注意事項</a>
+                <a href="#contact" class="ml-4 bg-sports-blue text-white px-4 py-2 rounded-full text-xs font-bold hover:bg-sports-brand transition-colors shadow-sm">
+                    お問い合わせ
+                </a>
+            </nav>
+
+            <!-- スマホメニューボタン -->
+            <button id="menu-btn" class="md:hidden flex flex-col justify-between w-6 h-5 text-slate-700 focus:outline-none" aria-label="メニューを開く">
+                <span class="w-full h-0.5 bg-slate-800 rounded transition-transform origin-top-left" id="span1"></span>
+                <span class="w-3/4 h-0.5 bg-slate-800 rounded transition-opacity self-end" id="span2"></span>
+                <span class="w-full h-0.5 bg-slate-800 rounded transition-transform origin-bottom-left" id="span3"></span>
+            </button>
+        </div>
+
+        <!-- スマホ用ドロップダウンメニュー -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100 px-4 py-4 space-y-2 shadow-lg transition-all">
+            <a href="#about" class="block py-3 px-4 text-slate-700 font-bold hover:bg-slate-50 rounded-xl transition" onclick="toggleMenu()">大会について</a>
+            <a href="#news" class="block py-3 px-4 text-slate-700 font-bold hover:bg-slate-50 rounded-xl transition" onclick="toggleMenu()">お知らせ</a>
+            <a href="#program" class="block py-3 px-4 text-slate-700 font-bold hover:bg-slate-50 rounded-xl transition" onclick="toggleMenu()">プログラム</a>
+            <a href="#map" class="block py-3 px-4 text-slate-700 font-bold hover:bg-slate-50 rounded-xl transition" onclick="toggleMenu()">会場案内</a>
+            <a href="#precautions" class="block py-3 px-4 text-slate-700 font-bold hover:bg-slate-50 rounded-xl transition" onclick="toggleMenu()">注意事項</a>
+            <a href="#contact" class="block py-3 px-4 bg-sports-blue text-white text-center font-bold rounded-xl transition hover:bg-sports-brand" onclick="toggleMenu()">お問い合わせ</a>
+        </div>
+    </header>
+
+    <!-- 3. ヒーローセクション（ファーストビュー） -->
+    <section class="relative min-h-[90vh] sm:min-h-[85vh] flex items-center justify-center overflow-hidden bg-sports-blue text-white py-16 px-4">
+        <!-- 幾何学背景グラフィックス -->
+        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#ff6b00_1px,transparent_1px)] [background-size:16px_16px]"></div>
+        <div class="absolute -top-40 -left-40 w-96 h-96 bg-sports-brand rounded-full filter blur-[120px] opacity-20 animate-pulse"></div>
+        <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-blue-500 rounded-full filter blur-[120px] opacity-20"></div>
+
+        <!-- 躍動感のある斜めの装飾 -->
+        <div class="absolute bottom-0 right-0 left-0 h-24 bg-gradient-to-t from-slate-100 to-transparent pointer-events-none"></div>
+
+        <div class="relative max-w-5xl mx-auto text-center z-10">
+            <!-- キャッチコピー＆バッジ -->
+            <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold tracking-wider text-sports-brand border border-white/20 mb-6 animate-bounce">
+                <span class="flex h-2 w-2 relative">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sports-brand opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-sports-brand"></span>
+                </span>
+                つなぐ絆、走る歓び。一歩先へ、苗代の未来！
+            </div>
+
+            <!-- メインタイトル -->
+            <h2 class="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight mb-6 leading-tight">
+                第53回 <br class="sm:hidden">
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-sports-brand to-amber-400">苗代校下</span> <br class="md:hidden">
+                社会体育大会
+            </h2>
+
+            <p class="text-slate-300 text-sm sm:text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed font-light">
+                さあ、今年もこの熱い季節がやってきた！町民が一丸となり、汗を流し、絆を深める苗代地区最大のスポーツフェスティバル。
+            </p>
+
+            <!-- 開催情報ダッシュボード -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto mb-12">
+                <!-- 日時 -->
+                <div class="bg-white/5 backdrop-blur-md border border-white/10 p-5 rounded-2xl flex flex-col items-center justify-center shadow-lg transition-transform hover:scale-105 duration-300">
+                    <div class="w-10 h-10 rounded-full bg-sports-brand/20 flex items-center justify-center text-sports-brand mb-3 text-lg">
+                        <i class="fa-solid fa-calendar-days"></i>
+                    </div>
+                    <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">開催日時</span>
+                    <span class="text-base sm:text-lg font-black mt-1">2026年 10月4日(日)</span>
+                    <span class="text-xs text-slate-400 mt-0.5">8:30 開会式 / 雨天順延</span>
+                </div>
+                <!-- 場所 -->
+                <div class="bg-white/5 backdrop-blur-md border border-white/10 p-5 rounded-2xl flex flex-col items-center justify-center shadow-lg transition-transform hover:scale-105 duration-300">
+                    <div class="w-10 h-10 rounded-full bg-sports-brand/20 flex items-center justify-center text-sports-brand mb-3 text-lg">
+                        <i class="fa-solid fa-map-location-dot"></i>
+                    </div>
+                    <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">開催場所</span>
+                    <span class="text-base sm:text-lg font-black mt-1">小松市立苗代小学校</span>
+                    <span class="text-xs text-slate-400 mt-0.5">グラウンド（特設会場）</span>
+                </div>
+                <!-- 規模 -->
+                <div class="bg-white/5 backdrop-blur-md border border-white/10 p-5 rounded-2xl flex flex-col items-center justify-center shadow-lg transition-transform hover:scale-105 duration-300">
+                    <div class="w-10 h-10 rounded-full bg-sports-brand/20 flex items-center justify-center text-sports-brand mb-3 text-lg">
+                        <i class="fa-solid fa-users-line"></i>
+                    </div>
+                    <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">参加対象</span>
+                    <span class="text-base sm:text-lg font-black mt-1">苗代校下住民全員</span>
+                    <span class="text-xs text-slate-400 mt-0.5">18町内対抗・オープン競技</span>
+                </div>
+            </div>
+
+            <!-- カウントダウンタイマー -->
+            <div class="bg-white/10 backdrop-blur-lg border border-white/10 max-w-md mx-auto p-4 rounded-2xl shadow-xl">
+                <p class="text-xs text-slate-300 font-bold mb-2">🚀 大会スタートまであと...</p>
+                <div class="flex justify-center gap-4 text-center">
+                    <div>
+                        <span id="days" class="text-3xl font-black text-sports-brand">00</span>
+                        <span class="text-[10px] text-slate-400 block font-bold">DAYS</span>
+                    </div>
+                    <span class="text-2xl font-bold text-slate-500 self-center">:</span>
+                    <div>
+                        <span id="hours" class="text-3xl font-black text-white">00</span>
+                        <span class="text-[10px] text-slate-400 block font-bold">HOURS</span>
+                    </div>
+                    <span class="text-2xl font-bold text-slate-500 self-center">:</span>
+                    <div>
+                        <span id="minutes" class="text-3xl font-black text-white">00</span>
+                        <span class="text-[10px] text-slate-400 block font-bold">MINS</span>
+                    </div>
+                    <span class="text-2xl font-bold text-slate-500 self-center">:</span>
+                    <div>
+                        <span id="seconds" class="text-3xl font-black text-white">00</span>
+                        <span class="text-[10px] text-slate-400 block font-bold">SECS</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 下へのスクロール促進 -->
+        <a href="#about" class="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-1 text-slate-400 hover:text-white transition">
+            <span class="text-xs font-bold tracking-widest">SCROLL DOWN</span>
+            <div class="w-6 h-10 border-2 border-slate-500 rounded-full p-1 flex justify-center items-start">
+                <div class="w-1.5 h-1.5 bg-sports-brand rounded-full animate-bounce mt-1"></div>
+            </div>
+        </a>
+    </section>
+
+    <!-- 4. 大会紹介（About） -->
+    <section id="about" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div class="text-center mb-16 fade-in">
+            <span class="text-xs font-bold text-sports-brand tracking-widest uppercase bg-sports-brand/10 px-3 py-1 rounded-full">ABOUT NOSHIRO</span>
+            <h3 class="text-3xl font-black text-sports-blue mt-3">苗代校下社会体育大会とは</h3>
+            <div class="w-12 h-1 bg-sports-brand mx-auto mt-4 rounded-full"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div class="space-y-6 fade-in">
+                <h4 class="text-xl sm:text-2xl font-bold text-sports-blue leading-snug">
+                    世代を超えてタスキをつなぐ、<br class="hidden sm:inline">
+                    苗代がひとつになる特別な1日。
+                </h4>
+                <p class="text-slate-600 leading-relaxed text-sm sm:text-base">
+                    石川県小松市の東部に位置する苗代地区。古くから地域のつながりを大切にしてきたこの街で、社会体育大会はもっとも盛り上がる秋の一大イベントです。
+                </p>
+                <p class="text-slate-600 leading-relaxed text-sm sm:text-base">
+                    幼児からシニアまで、18の町内会が熱い火花を散らしながら競う「町内対抗競技」や、どなたでも気軽に参加して景品がもらえる「オープン競技」など、みんなが主役になれるプログラムが目白押しです。
+                </p>
+                
+                <!-- メッセージボックス -->
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-sports-blue p-5 rounded-r-2xl">
+                    <p class="text-sm italic text-slate-700 font-medium">
+                        「勝ち負け以上に、お互いを称え合い、笑顔でハイタッチを交わす。そんな温かさが苗代体育大会の最高の魅力です。」
+                    </p>
+                    <span class="block text-xs font-bold text-slate-500 mt-2 text-right">— 苗代校下社会体育振興会 実行委員会一同</span>
+                </div>
+            </div>
+
+            <!-- ビジュアル/アピールポイントカード -->
+            <div class="grid grid-cols-2 gap-4 fade-in">
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center hover:shadow-md transition">
+                    <div class="w-12 h-12 rounded-2xl bg-orange-100 text-sports-brand flex items-center justify-center text-xl font-bold mb-4">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <span class="text-2xl font-black text-sports-blue">18町内</span>
+                    <span class="text-xs text-slate-500 mt-1">町内対抗の熱きプライド</span>
+                </div>
+
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center hover:shadow-md transition">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-sports-accent flex items-center justify-center text-xl font-bold mb-4">
+                        <i class="fa-solid fa-heart-pulse"></i>
+                    </div>
+                    <span class="text-2xl font-black text-sports-blue">30+種目</span>
+                    <span class="text-xs text-slate-500 mt-1">誰でも輝ける多彩な競技</span>
+                </div>
+
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center hover:shadow-md transition">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-xl font-bold mb-4">
+                        <i class="fa-solid fa-gift"></i>
+                    </div>
+                    <span class="text-2xl font-black text-sports-blue">豪華景品</span>
+                    <span class="text-xs text-slate-500 mt-1">オープン競技で賞品ゲット！</span>
+                </div>
+
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center hover:shadow-md transition">
+                    <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center text-xl font-bold mb-4">
+                        <i class="fa-solid fa-handshake"></i>
+                    </div>
+                    <span class="text-2xl font-black text-sports-blue">つながり</span>
+                    <span class="text-xs text-slate-500 mt-1">世代を超えたコミュニティ</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. 最新ニュース＆お知らせ（News） -->
+    <section id="news" class="bg-slate-100 py-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 fade-in">
+                <span class="text-xs font-bold text-sports-brand tracking-widest uppercase bg-sports-brand/10 px-3 py-1 rounded-full">NEWS / NOTICE</span>
+                <h3 class="text-3xl font-black text-sports-blue mt-3">重要なお知らせ</h3>
+                <div class="w-12 h-1 bg-sports-brand mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <!-- お知らせカードリスト -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- ニュース1 -->
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200/60 overflow-hidden hover:shadow-md transition duration-300 fade-in flex flex-col h-full">
+                    <div class="p-6 flex-grow">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">重要</span>
+                            <span class="text-xs text-slate-400 font-bold">2026.09.28</span>
+                        </div>
+                        <h4 class="text-base sm:text-lg font-bold text-slate-800 mb-2 hover:text-sports-brand transition line-clamp-2">
+                            熱中症対策のお願いと、各家庭での水分補給準備について
+                        </h4>
+                        <p class="text-slate-500 text-xs sm:text-sm line-clamp-3">
+                            大会当日は気温上昇が懸念されます。振興会でも給水所を準備しますが、各自でマイボトルの用意など熱中症予防の対策をお願いします。
+                        </p>
+                    </div>
+                    <div class="bg-slate-50 px-6 py-4 border-t border-slate-100">
+                        <span class="text-xs font-bold text-sports-brand flex items-center gap-1 cursor-pointer hover:underline" onclick="showModal('notice-1')">
+                            詳細を読む <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- ニュース2 -->
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200/60 overflow-hidden hover:shadow-md transition duration-300 fade-in flex flex-col h-full">
+                    <div class="p-6 flex-grow">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="bg-blue-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">案内</span>
+                            <span class="text-xs text-slate-400 font-bold">2026.09.20</span>
+                        </div>
+                        <h4 class="text-base sm:text-lg font-bold text-slate-800 mb-2 hover:text-sports-brand transition line-clamp-2">
+                            駐車場利用に関する注意事項とお願い（マナー厳守）
+                        </h4>
+                        <p class="text-slate-500 text-xs sm:text-sm line-clamp-3">
+                            苗代小学校周辺、および近隣店舗等への無断駐車は絶対におやめください。指定駐車場（下記参照）の利用にご協力をお願いいたします。
+                        </p>
+                    </div>
+                    <div class="bg-slate-50 px-6 py-4 border-t border-slate-100">
+                        <span class="text-xs font-bold text-sports-brand flex items-center gap-1 cursor-pointer hover:underline" onclick="showModal('notice-2')">
+                            詳細を読む <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- ニュース3 -->
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200/60 overflow-hidden hover:shadow-md transition duration-300 fade-in flex flex-col h-full">
+                    <div class="p-6 flex-grow">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="bg-emerald-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">公開</span>
+                            <span class="text-xs text-slate-400 font-bold">2026.09.15</span>
+                        </div>
+                        <h4 class="text-base sm:text-lg font-bold text-slate-800 mb-2 hover:text-sports-brand transition line-clamp-2">
+                            【プログラム公開】町内対抗競技＆オープン競技一覧
+                        </h4>
+                        <p class="text-slate-500 text-xs sm:text-sm line-clamp-3">
+                            今年の全32競技の確定版タイムスケジュールを公開いたしました。参加種目の招集時間など事前に確認しておきましょう。
+                        </p>
+                    </div>
+                    <div class="bg-slate-50 px-6 py-4 border-t border-slate-100">
+                        <a href="#program" class="text-xs font-bold text-sports-brand flex items-center gap-1 hover:underline">
+                            プログラムを見る <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. プログラムスケジュール（Program） -->
+    <section id="program" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div class="text-center mb-16 fade-in">
+            <span class="text-xs font-bold text-sports-brand tracking-widest uppercase bg-sports-brand/10 px-3 py-1 rounded-full">PROGRAM & SCHEDULE</span>
+            <h3 class="text-3xl font-black text-sports-blue mt-3">タイムスケジュール</h3>
+            <p class="text-xs text-slate-500 mt-2">※進行状況により時間は多少前後することがあります。</p>
+            <div class="w-12 h-1 bg-sports-brand mx-auto mt-4 rounded-full"></div>
+        </div>
+
+        <!-- タブ切り替えボタン -->
+        <div class="flex justify-center mb-10 fade-in">
+            <div class="inline-flex bg-slate-200/80 p-1 rounded-full shadow-inner">
+                <button onclick="switchTab('morning')" id="tab-morning" class="px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 bg-white text-sports-blue shadow-sm">
+                    🌅 午前の部 (8:30〜)
+                </button>
+                <button onclick="switchTab('afternoon')" id="tab-afternoon" class="px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 text-slate-600 hover:text-slate-900">
+                    ☀️ 午後の部 (13:00〜)
+                </button>
+            </div>
+        </div>
+
+        <!-- 午前のスケジュール -->
+        <div id="content-morning" class="space-y-6 fade-in max-w-3xl mx-auto">
+            <!-- 開会式 -->
+            <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/60 shadow-sm hover:shadow transition flex items-start gap-4">
+                <div class="bg-slate-100 text-slate-600 p-3 rounded-xl flex flex-col items-center justify-center min-w-[70px] font-bold">
+                    <span class="text-xs text-slate-400">Time</span>
+                    <span class="text-sm sm:text-base">08:30</span>
+                </div>
+                <div class="flex-grow">
+                    <div class="flex items-center gap-2 flex-wrap mb-1">
+                        <span class="bg-slate-800 text-white text-[9px] px-2 py-0.5 rounded font-bold">全員対象</span>
+                    </div>
+                    <h4 class="text-base sm:text-lg font-bold text-sports-blue">開会式</h4>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1">選手入場、国旗掲揚、選手宣誓、準備体操（ラジオ体操第一）。</p>
+                </div>
+            </div>
+
+            <!-- 競技1 -->
+            <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/60 shadow-sm hover:shadow transition flex items-start gap-4">
+                <div class="bg-orange-50 text-sports-brand p-3 rounded-xl flex flex-col items-center justify-center min-w-[70px] font-bold">
+                    <span class="text-xs text-orange-400">Time</span>
+                    <span class="text-sm sm:text-base">09:00</span>
+                </div>
+                <div class="flex-grow">
+                    <div class="flex items-center gap-2 flex-wrap mb-1">
+                        <span class="bg-sports-brand text-white text-[9px] px-2 py-0.5 rounded font-bold">町内対抗</span>
+                        <span class="bg-amber-100 text-amber-800 text-[9px] px-2 py-0.5 rounded font-bold">得点種目</span>
+                    </div>
+                    <h4 class="text-base sm:text-lg font-bold text-sports-blue">1. 大玉転がし (一般男女)</h4>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1">巨大な大玉を二人三脚で転がしながらコーンを回る、スリル満点の競技！</p>
+                </div>
+            </div>
+
+            <!-- 競技2 -->
+            <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/60 shadow-sm hover:shadow transition flex items-start gap-4">
+                <div class="bg-emerald-50 text-sports-accent p-3 rounded-xl flex flex-col items-center justify-center min-w-[70px] font-bold">
+                    <span class="text-xs text-emerald-400">Time</span>
+                    <span class="text-sm sm:text-base">09:30</span>
+                </div>
+                <div class="flex-grow">
+                    <div class="flex items-center gap-2 flex-wrap mb-1">
+                        <span class="bg-sports-accent text-white text-[9px] px-2 py-0.5 rounded font-bold">オープン</span>
+                        <span class="bg-blue-100 text-blue-800 text-[9px] px-2 py-0.5 rounded font-bold">景品あり</span>
+                    </div>
+                    <h4 class="text-base sm:text-lg font-bold text-sports-blue">2. 徒競走「それ行け幼児」 (未就学児)</h4>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1">元気よく真っ直ぐゴールへ！参加したかわいい子供たち全員にお菓子セットを贈呈。</p>
+                </div>
+            </div>
+
+            <!-- 競技3 -->
+            <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/60 shadow-sm hover:shadow transition flex items-start gap-4">
+                <div class="bg-orange-50 text-sports-brand p-3 rounded-xl flex flex-col items-center justify-center min-w-[70px] font-bold">
+                    <span class="text-xs text-orange-400">Time</span>
+                    <span class="text-sm sm:text-base">10:15</span>
+                </div>
+                <div class="flex-grow">
+                    <div class="flex items-center gap-2 flex-wrap mb-1">
+                        <span class="bg-sports-brand text-white text-[9px] px-2 py-0.5 rounded font-bold">町内対抗</span>
+                        <span class="bg-amber-100 text-amber-800 text-[9px] px-2 py-0.5 rounded font-bold">得点種目</span>
+                    </div>
+                    <h4 class="text-base sm:text-lg font-bold text-sports-blue">3. 玉入れ競争 (全世代)</h4>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1">子供からお年寄りまで参加可能。制限時間1分間で、籠の中に多くの玉を入れたチームが勝ち。</p>
+                </div>
+            </div>
+
+            <!-- 競技4 -->
+            <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/60 shadow-sm hover:shadow transition flex items-start gap-4">
+                <div class="bg-emerald-50 text-sports-accent p-3 rounded-xl flex flex-col items-center justify-center min-w-[70px] font-bold">
+                    <span class="text-xs text-emerald-400">Time</span>
+                    <span class="text-sm sm:text-base">11:00</span>
+                </div>
+                <div class="flex-grow">
+                    <div class="flex items-center gap-2 flex-wrap mb-1">
+                        <span class="bg-sports-accent text-white text-[9px] px-2 py-0.5 rounded font-bold">オープン</span>
+                        <span class="bg-blue-100 text-blue-800 text-[9px] px-2 py-0.5 rounded font-bold">景品あり</span>
+                    </div>
+                    <h4 class="text-base sm:text-lg font-bold text-sports-blue">4. パン食い競争 (誰でも)</h4>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1">大人気、伝統のパン食い！手を使わずに上手にパンを咥えてゴールへ急げ！</p>
+                </div>
+            </div>
+
+            <!-- 昼食休み -->
+            <div class="bg-amber-50 rounded-2xl p-5 sm:p-6 border border-amber-200/60 shadow-sm flex items-start gap-4">
+                <div class="bg-amber-100 text-amber-800 p-3 rounded-xl flex flex-col items-center justify-center min-w-[70px] font-bold">
+                    <span class="text-xs text-amber-500">Break</span>
+                    <span class="text-sm sm:text-base">12:00</span>
+                </div>
+                <div class="flex-grow">
+                    <h4 class="text-base sm:text-lg font-bold text-amber-900">🍱 昼食・休憩 (苗代太鼓の特別演奏)</h4>
+                    <p class="text-xs sm:text-sm text-amber-700 mt-1">お昼休みには、地元の苗代太鼓保存会の皆さんによる迫力の演舞がグランド中央で披露されます。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 午後のスケジュール -->
+        <div id="content-afternoon" class="hidden space-y-6 fade-in max-w-3xl mx-auto">
+            <!-- 競技5 -->
+            <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/60 shadow-sm hover:shadow transition flex items-start gap-4">
+                <div class="bg-orange-50 text-sports-brand p-3 rounded-xl flex flex-col items-center justify-center min-w-[70px] font-bold">
+                    <span class="text-xs text-orange-400">Time</span>
+                    <span class="text-sm sm:text-base">13:00</span>
+                </div>
+                <div class="flex-grow">
+                    <div class="flex items-center gap-2 flex-wrap mb-1">
+                        <span class="bg-sports-brand text-white text-[9px] px-2 py-0.5 rounded font-bold">町内対抗</span>
+                        <span class="bg-amber-100 text-amber-800 text-[9px] px-2 py-0.5 rounded font-bold">得点種目</span>
+                    </div>
+                    <h4 class="text-base sm:text-lg font-bold text-sports-blue">5. 綱引き合戦 (町内選抜)</h4>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1">各町内から腕に覚えのある力自慢が勢揃い。大歓声が沸き起こる大一番です！</p>
+                </div>
+            </div>
+
+            <!-- 競技6 -->
+            <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/60 shadow-sm hover:shadow transition flex items-start gap-4">
+                <div class="bg-emerald-50 text-sports-accent p-3 rounded-xl flex flex-col items-center justify-center min-w-[70px] font-bold">
+                    <span class="text-xs text-emerald-400">Time</span>
+                    <span class="text-sm sm:text-base">13:45</span>
+                </div>
+                <div class="flex-grow">
+                    <div class="flex items-center gap-2 flex-wrap mb-1">
+                        <span class="bg-sports-accent text-white text-[9px] px-2 py-0.5 rounded font-bold">オープン</span>
+                        <span class="bg-purple-100 text-purple-800 text-[9px] px-2 py-0.5 rounded font-bold">お楽しみ</span>
+                    </div>
+                    <h4 class="text-base sm:text-lg font-bold text-sports-blue">6. 苗代音頭 (全員参加)</h4>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1">どなたでもトラックに入って輪を作り、伝統の「苗代音頭」をみんなで踊りましょう。</p>
+                </div>
+            </div>
+
+            <!-- 競技7 -->
+            <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/60 shadow-sm hover:shadow transition flex items-start gap-4">
+                <div class="bg-orange-50 text-sports-brand p-3 rounded-xl flex flex-col items-center justify-center min-w-[70px] font-bold">
+                    <span class="text-xs text-orange-400">Time</span>
+                    <span class="text-sm sm:text-base">14:30</span>
+                </div>
+                <div class="flex-grow">
+                    <div class="flex items-center gap-2 flex-wrap mb-1">
+                        <span class="bg-sports-brand text-white text-[9px] px-2 py-0.5 rounded font-bold">町内対抗</span>
+                        <span class="bg-red-100 text-red-800 text-[9px] px-2 py-0.5 rounded font-bold">花形・得点倍</span>
+                    </div>
+                    <h4 class="text-base sm:text-lg font-bold text-sports-blue">7. 年代別混成リレー (ファイナル)</h4>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1">小学生、中学生、20代、30代、40代、50代以上がタスキを繋ぎゴールを目指す、体育大会のクライマックス！</p>
+                </div>
+            </div>
+
+            <!-- 閉会式 -->
+            <div class="bg-slate-800 text-white rounded-2xl p-5 sm:p-6 shadow-sm flex items-start gap-4">
+                <div class="bg-slate-700 text-slate-300 p-3 rounded-xl flex flex-col items-center justify-center min-w-[70px] font-bold">
+                    <span class="text-xs text-slate-400">End</span>
+                    <span class="text-sm sm:text-base">15:30</span>
+                </div>
+                <div class="flex-grow">
+                    <h4 class="text-base sm:text-lg font-bold">閉会式・表彰式</h4>
+                    <p class="text-xs sm:text-sm text-slate-400 mt-1">総得点の発表、総合優勝・準優勝・第3位の表彰。最後は豪華な景品が当たる大抽選会を開催！</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. 会場案内（Map / Layout） -->
+    <section id="map" class="bg-slate-900 text-white py-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 fade-in">
+                <span class="text-xs font-bold text-sports-brand tracking-widest uppercase bg-white/10 px-3 py-1 rounded-full">VENUE MAP</span>
+                <h3 class="text-3xl font-black mt-3 text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">グラウンド・テント配置図</h3>
+                <div class="w-12 h-1 bg-sports-brand mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+                <!-- グラウンド図（SVGベースで洗練された視覚表現） -->
+                <div class="lg:col-span-8 bg-slate-800 rounded-3xl p-4 sm:p-6 border border-slate-700 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-base sm:text-lg font-bold text-slate-200">
+                                <i class="fa-solid fa-map-marked-alt text-sports-brand mr-2"></i> テント・施設配置図（苗代小グラウンド）
+                            </h4>
+                            <span class="text-[10px] bg-slate-700 px-2 py-1 rounded text-slate-400">タップでズーム可能</span>
+                        </div>
+
+                        <!-- 簡易インタラクティブMAPコンポーネント -->
+                        <div class="overflow-x-auto rounded-2xl border border-slate-700 bg-emerald-950 p-4">
+                            <div class="min-w-[600px] aspect-[16/9] relative border-4 border-dashed border-white/20 rounded-xl bg-gradient-to-b from-emerald-800 to-emerald-900 flex flex-col items-center justify-between p-6 overflow-hidden">
+                                
+                                <!-- 本部テント・音響 -->
+                                <div class="absolute top-2 left-1/2 -translate-x-1/2 flex gap-2">
+                                    <div class="bg-red-600 text-white text-xs font-black px-3 py-1.5 rounded-lg shadow-md border border-white/20 text-center">
+                                        本部・救護席
+                                    </div>
+                                    <div class="bg-indigo-600 text-white text-xs font-black px-3 py-1.5 rounded-lg shadow-md border border-white/20 text-center">
+                                        音響・アナウンス
+                                    </div>
+                                    <div class="bg-amber-600 text-white text-xs font-black px-3 py-1.5 rounded-lg shadow-md border border-white/20 text-center">
+                                        招集所
+                                    </div>
+                                </div>
+
+                                <!-- トラック（陸上オーバル） -->
+                                <div class="w-4/5 h-2/3 border-4 border-white/30 rounded-[100px] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none">
+                                    <span class="text-white/10 font-black text-2xl tracking-widest uppercase">TRAK AREA</span>
+                                </div>
+
+                                <!-- 左側：町内テント (1) -->
+                                <div class="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col gap-2">
+                                    <span class="text-[10px] text-white/50 text-center font-bold">町内テントA</span>
+                                    <div class="bg-emerald-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow cursor-pointer hover:bg-sports-brand transition">苗代町</div>
+                                    <div class="bg-emerald-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow cursor-pointer hover:bg-sports-brand transition">南苗代町</div>
+                                    <div class="bg-emerald-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow cursor-pointer hover:bg-sports-brand transition">北苗代町</div>
+                                </div>
+
+                                <!-- 右側：町内テント (2) -->
+                                <div class="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-2">
+                                    <span class="text-[10px] text-white/50 text-center font-bold">町内テントB</span>
+                                    <div class="bg-emerald-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow cursor-pointer hover:bg-sports-brand transition">古府町</div>
+                                    <div class="bg-emerald-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow cursor-pointer hover:bg-sports-brand transition font-medium">国府台</div>
+                                    <div class="bg-emerald-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow cursor-pointer hover:bg-sports-brand transition">大野町</div>
+                                </div>
+
+                                <!-- 中央（フィールド内） -->
+                                <div class="z-10 flex flex-col items-center">
+                                    <span class="bg-white/10 backdrop-blur text-white text-xs px-3 py-1 rounded-full font-bold">競技フィールド</span>
+                                    <span class="text-[10px] text-emerald-300 mt-1">（綱引き・玉入れなど中央で実施）</span>
+                                </div>
+
+                                <!-- 手前下部：一般・観客席・トイレ・給水所 -->
+                                <div class="absolute bottom-2 left-4 right-4 flex justify-between items-end">
+                                    <div class="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-lg shadow flex items-center gap-1">
+                                        <i class="fa-solid fa-faucet-drip"></i> 給水所
+                                    </div>
+                                    <div class="bg-slate-700 text-white text-xs font-bold px-3 py-1 rounded-lg shadow flex items-center gap-1">
+                                        <i class="fa-solid fa-restroom"></i> トイレ（校舎・体育館）
+                                    </div>
+                                    <div class="bg-yellow-500 text-slate-900 text-xs font-bold px-3 py-1 rounded-lg shadow flex items-center gap-1">
+                                        <i class="fa-solid fa-triangle-exclamation"></i> 退場口・入場口
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 bg-slate-900/50 p-4 rounded-xl border border-slate-700/50 text-xs text-slate-400 leading-relaxed">
+                        <strong class="text-white block mb-1">💡 テント利用についてのご注意:</strong>
+                        各町内の指定位置に設置されたテントをご利用ください。持ち込み用のワンタッチサンシェード等は、指定のフリースペースエリア（グラウンド南側芝生スペース）に設置いただけます。
+                    </div>
+                </div>
+
+                <!-- アクセスと基本情報 -->
+                <div class="lg:col-span-4 flex flex-col justify-between gap-6">
+                    <!-- Google Maps風 カード -->
+                    <div class="bg-slate-800 rounded-3xl p-6 border border-slate-700 flex-grow">
+                        <h4 class="text-base sm:text-lg font-bold mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-location-dot text-sports-brand"></i> アクセス情報
+                        </h4>
+                        
+                        <div class="rounded-2xl overflow-hidden h-48 bg-slate-700 border border-slate-600 relative mb-4">
+                            <!-- ダミーマップとしての地図画像または実際のiframeに置き換え -->
+                            <iframe 
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1m12!1m3!1m2!1s0x5ff90947703da9e5%3A0xe54ef5bb50839e55!2z5bCP5p2-5biC56uL6IuX5Luj5bCP5a2m5qCh!5e0!3m2!1sja!2sjp!4v1700000000000!5m2!1sja!2sjp" 
+                                class="w-full h-full border-0 grayscale opacity-80 contrast-125" 
+                                allowfullscreen="" 
+                                loading="lazy" 
+                                referrerpolicy="no-referrer-when-downgrade">
+                            </iframe>
+                        </div>
+
+                        <div class="space-y-3 text-xs sm:text-sm text-slate-300">
+                            <p class="font-bold text-white">小松市立苗代小学校</p>
+                            <p class="text-slate-400">〒923-0835 石川県小松市殿町２丁目７８</p>
+                            <hr class="border-slate-700 my-2">
+                            <p class="flex items-center gap-2">
+                                <i class="fa-solid fa-bus text-slate-400"></i>
+                                <span>小松駅からコミュニティバス「苗代」下車 徒歩5分</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 駐車場ガイド -->
+                    <div class="bg-gradient-to-br from-amber-950 to-slate-900 rounded-3xl p-6 border border-amber-500/30">
+                        <h4 class="text-base sm:text-lg font-bold text-amber-400 mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-square-parking"></i> 指定駐車場（無料）
+                        </h4>
+                        <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                            当日は、下記の特設駐車場をご利用いただけます。満車になる場合がありますので、できるだけ乗り合わせか自転車、徒歩でのご来場をお願いします。
+                        </p>
+                        <ul class="text-xs space-y-2 text-slate-300">
+                            <li class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                                <strong>第1駐車場：</strong> 苗代小学校グラウンド北側（約50台）
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                                <strong>第2駐車場：</strong> 苗代公民館駐車場（約30台）
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                                <strong>第3駐車場：</strong> JA小松市 苗代支店（※当日のみ利用可）
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 8. 注意事項 & 持ち物（Precautions / FAQ） -->
+    <section id="precautions" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div class="text-center mb-16 fade-in">
+            <span class="text-xs font-bold text-sports-brand tracking-widest uppercase bg-sports-brand/10 px-3 py-1 rounded-full">ATTENTION & FAQ</span>
+            <h3 class="text-3xl font-black text-sports-blue mt-3">注意事項 ＆ よくある質問</h3>
+            <div class="w-12 h-1 bg-sports-brand mx-auto mt-4 rounded-full"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            <!-- 当日の持ち物・ルール -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/60 shadow-sm fade-in">
+                <h4 class="text-lg sm:text-xl font-bold text-sports-blue mb-6 flex items-center gap-2">
+                    <i class="fa-solid fa-clipboard-list text-sports-brand"></i> 大会ルール・マナー
+                </h4>
+
+                <div class="space-y-6">
+                    <div class="flex items-start gap-3">
+                        <div class="w-6 h-6 rounded-full bg-red-100 text-red-600 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                            <i class="fa-solid fa-ban"></i>
+                        </div>
+                        <div>
+                            <h5 class="text-sm font-bold text-slate-800">ゴミの「完全お持ち帰り」への協力</h5>
+                            <p class="text-xs text-slate-500 mt-1">グラウンド内にゴミ箱は設置いたしません。発生したゴミは、各ご家庭・各町内の責任においてすべてお持ち帰りください。</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3">
+                        <div class="w-6 h-6 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                            <i class="fa-solid fa-droplet"></i>
+                        </div>
+                        <div>
+                            <h5 class="text-sm font-bold text-slate-800">熱中症対策を最優先に</h5>
+                            <p class="text-xs text-slate-500 mt-1">水分・塩分の補給、帽子や日傘の利用、定期的な日陰での休憩など、熱中症予防にはくれぐれもご注意ください。体調が優れない場合はすぐ救護席へお越しください。</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3">
+                        <div class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                            <i class="fa-solid fa-volume-high"></i>
+                        </div>
+                        <div>
+                            <h5 class="text-sm font-bold text-slate-800">アナウンス、呼び出しに注意</h5>
+                            <p class="text-xs text-slate-500 mt-1">次の競技への招集やプログラムの進行変更は、アナウンスでお知らせします。召集が遅れると競技に参加できない場合があります。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ (アコーディオン) -->
+            <div class="space-y-4 fade-in">
+                <!-- 質問1 -->
+                <div class="bg-white rounded-2xl border border-slate-200/60 overflow-hidden shadow-sm">
+                    <button class="w-full text-left p-5 font-bold flex justify-between items-center text-slate-800 hover:bg-slate-50 transition" onclick="toggleFaq('faq-1')">
+                        <span class="text-sm sm:text-base flex items-center gap-2">
+                            <span class="text-sports-brand text-xs">Q1.</span> 雨天時の開催判断はどこで、いつ行われますか？
+                        </span>
+                        <i class="fa-solid fa-chevron-down text-slate-400 transition" id="faq-1-icon"></i>
+                    </button>
+                    <div class="hidden border-t border-slate-100 bg-slate-50/50 p-5 text-xs sm:text-sm text-slate-600" id="faq-1-content">
+                        大会当日の午前6:00に、実行委員会にて開催の最終決定を行います。決定事項は、この特設サイトの「速報」エリア、および町内の緊急連絡網にてすぐにお知らせいたします。雨天で順延となる場合は、翌週10月11日（日）に開催いたします。
+                    </div>
+                </div>
+
+                <!-- 質問2 -->
+                <div class="bg-white rounded-2xl border border-slate-200/60 overflow-hidden shadow-sm">
+                    <button class="w-full text-left p-5 font-bold flex justify-between items-center text-slate-800 hover:bg-slate-50 transition" onclick="toggleFaq('faq-2')">
+                        <span class="text-sm sm:text-base flex items-center gap-2">
+                            <span class="text-sports-brand text-xs">Q2.</span> オープン競技は、誰でも飛び入りで参加できますか？
+                        </span>
+                        <i class="fa-solid fa-chevron-down text-slate-400 transition" id="faq-2-icon"></i>
+                    </button>
+                    <div class="hidden border-t border-slate-100 bg-slate-50/50 p-5 text-xs sm:text-sm text-slate-600" id="faq-2-content">
+                        はい！「オープン」と書かれた競技は、事前申し込み不要で誰でもその場で飛び入り参加が可能です。アナウンスで競技招集がかかりましたら、グラウンド南側の「招集所」までお集まりください。参加いただいた皆様にはもれなく素敵な参加賞を差し上げます。
+                    </div>
+                </div>
+
+                <!-- 質問3 -->
+                <div class="bg-white rounded-2xl border border-slate-200/60 overflow-hidden shadow-sm">
+                    <button class="w-full text-left p-5 font-bold flex justify-between items-center text-slate-800 hover:bg-slate-50 transition" onclick="toggleFaq('faq-3')">
+                        <span class="text-sm sm:text-base flex items-center gap-2">
+                            <span class="text-sports-brand text-xs">Q3.</span> 会場でお弁当や食べ物、飲み物の販売はありますか？
+                        </span>
+                        <i class="fa-solid fa-chevron-down text-slate-400 transition" id="faq-3-icon"></i>
+                    </button>
+                    <div class="hidden border-t border-slate-100 bg-slate-50/50 p-5 text-xs sm:text-sm text-slate-600" id="faq-3-content">
+                        本大会では売店やキッチンカーの出店はございません。お弁当や飲み物は各家庭でご持参いただくようお願いします。また、町内によってはテント内でのお弁当の手配や配布がある場合もございますので、詳細はお住まいの町内の体育委員までお問い合わせください。
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 9. お問い合わせ & フッター（Contact / Footer） -->
+    <section id="contact" class="bg-sports-blue text-white py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-800">
+        <div class="max-w-4xl mx-auto text-center">
+            <h3 class="text-2xl sm:text-3xl font-black mb-4 text-white">苗代校下社会体育振興会</h3>
+            <p class="text-slate-400 text-xs sm:text-sm max-w-lg mx-auto mb-8">
+                体育大会に関するご質問、各種目のルール、テント設営、町内会での参加方法に関するお問い合わせはお電話または公民館まで。
+            </p>
+
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mb-12">
+                <a href="tel:0761-22-XXXX" class="w-full sm:w-auto bg-sports-brand hover:bg-orange-600 text-white font-bold px-6 py-4 rounded-2xl flex items-center justify-center gap-3 shadow-lg transition">
+                    <i class="fa-solid fa-phone-volume"></i>
+                    <span>事務局：0761-22-XXXX</span>
+                </a>
+                <a href="mailto:info@example.com" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-white font-bold px-6 py-4 rounded-2xl flex items-center justify-center gap-3 shadow transition border border-slate-700">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span>メールでのお問い合わせ</span>
+                </a>
+            </div>
+
+            <!-- 著作権・組織情報 -->
+            <div class="border-t border-slate-800 pt-8 text-xs text-slate-500 space-y-2">
+                <p>【主催】苗代校下社会体育振興会 / 苗代校下公民館</p>
+                <p>【後援】小松市教育委員会 / 苗代小学校PTA / 苗代校下各町内会</p>
+                <p class="pt-4">&copy; 2026 Noshiro Sports Day Promotion Association. All Rights Reserved.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 10. インタラクティブ モーダル（ニュース詳細表示用） -->
+    <div id="modal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white text-slate-800 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl transition duration-300 transform scale-95" id="modal-container">
+            <div class="p-6 sm:p-8">
+                <div class="flex justify-between items-start mb-4">
+                    <div id="modal-tag" class="flex items-center gap-2">
+                        <!-- ここにJSで動的にバッジを追加 -->
+                    </div>
+                    <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <h4 id="modal-title" class="text-lg sm:text-xl font-bold text-sports-blue mb-4 leading-snug">タイトル</h4>
+                <div id="modal-content" class="text-xs sm:text-sm text-slate-600 leading-relaxed space-y-3">
+                    <!-- ここに本文を挿入 -->
+                </div>
+            </div>
+            <div class="bg-slate-50 px-6 py-4 border-t border-slate-100 text-right">
+                <button onclick="closeModal()" class="bg-sports-blue text-white px-5 py-2 rounded-xl text-xs sm:text-sm font-bold hover:bg-sports-brand transition">
+                    閉じる
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 11. JavaScriptロジック -->
+    <script>
+        // スマホメニューの開閉
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const span1 = document.getElementById('span1');
+        const span2 = document.getElementById('span2');
+        const span3 = document.getElementById('span3');
+
+        function toggleMenu() {
+            mobileMenu.classList.toggle('hidden');
+            span1.classList.toggle('rotate-45');
+            span1.classList.toggle('translate-y-1.5');
+            span2.classList.toggle('opacity-0');
+            span3.classList.toggle('-rotate-45');
+            span3.classList.toggle('-translate-y-2');
+        }
+        menuBtn.addEventListener('click', toggleMenu);
+
+        // 速報バナー表示切り替え（デモンストレーション用）
+        const alertTexts = [
+            "【開催可否】本日の第53回体育大会は、予定通り「苗代小学校グラウンド」にて開催いたします！ (朝6:00判定)",
+            "【お知らせ】明日の天候不良が予想されるため、体育大会は「翌週10月11日(日)」に延期が決定しました。",
+            "【結果発表】第53回体育大会が無事終了しました！今年の総合優勝は「殿町チーム」です！おめでとうございます！"
+        ];
+        let alertIndex = 0;
+        function toggleAnnouncement() {
+            alertIndex = (alertIndex + 1) % alertTexts.length;
+            document.getElementById('announcement-text').innerText = alertTexts[alertIndex];
+        }
+
+        // カウントダウンタイマー（今から1週間後を仮の目標日付として設定）
+        const targetDate = new Date();
+        targetDate.setDate(targetDate.getDate() + 7); // 7日後
+
+        function updateCountdown() {
+            const now = new Date();
+            const difference = targetDate - now;
+
+            if (difference < 0) {
+                document.getElementById('days').innerText = "00";
+                document.getElementById('hours').innerText = "00";
+                document.getElementById('minutes').innerText = "00";
+                document.getElementById('seconds').innerText = "00";
+                return;
+            }
+
+            const d = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const h = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((difference % (1000 * 60)) / 1000);
+
+            document.getElementById('days').innerText = String(d).padStart(2, '0');
+            document.getElementById('hours').innerText = String(h).padStart(2, '0');
+            document.getElementById('minutes').innerText = String(m).padStart(2, '0');
+            document.getElementById('seconds').innerText = String(s).padStart(2, '0');
+        }
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // プログラムスケジュール タブ切り替え
+        function switchTab(type) {
+            const btnMorning = document.getElementById('tab-morning');
+            const btnAfternoon = document.getElementById('tab-afternoon');
+            const contentMorning = document.getElementById('content-morning');
+            const contentAfternoon = document.getElementById('content-afternoon');
+
+            if (type === 'morning') {
+                btnMorning.className = "px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 bg-white text-sports-blue shadow-sm";
+                btnAfternoon.className = "px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 text-slate-600 hover:text-slate-900";
+                contentMorning.classList.remove('hidden');
+                contentAfternoon.classList.add('hidden');
+            } else {
+                btnAfternoon.className = "px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 bg-white text-sports-blue shadow-sm";
+                btnMorning.className = "px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 text-slate-600 hover:text-slate-900";
+                contentMorning.classList.add('hidden');
+                contentAfternoon.classList.remove('hidden');
+            }
+        }
+
+        // アコーディオン (FAQ)
+        function toggleFaq(id) {
+            const content = document.getElementById(`${id}-content`);
+            const icon = document.getElementById(`${id}-icon`);
+            content.classList.toggle('hidden');
+            icon.classList.toggle('rotate-180');
+        }
+
+        // モーダル表示
+        const newsData = {
+            'notice-1': {
+                tag: '<span class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">重要</span><span class="text-xs text-slate-400 font-bold">2026.09.28</span>',
+                title: '熱中症対策のお願いと、各家庭での水分補給準備について',
+                content: `<p>体育大会当日は、10月上旬としては異例の最高気温28度近くまで上昇する予報が出ております。</p>
+                          <p>大会本部ではテント内にミスト扇風機を設置し、本部テント横に冷たい麦茶やスポーツドリンクを提供する「応急給水所」を設けますが、参加者数が多いため完全に賄うことが難しい場合があります。</p>
+                          <p><strong>【皆様へのお願い】</strong></p>
+                          <p>1. 各ご家庭で必ず、人数分以上のスポーツドリンクやマイボトルの用意をお願いします。<br>
+                          2. 当日は塩分補給タブレット等の配布もありますが、各自での自衛対策も並行して実施してください。<br>
+                          3. 競技中、体に異変を感じた場合は無理をせず、ただちに最寄りの運営役員か、本部救護席にお申し出ください。看護師資格を持つスタッフが常駐しております。</p>`
+            },
+            'notice-2': {
+                tag: '<span class="bg-blue-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">案内</span><span class="text-xs text-slate-400 font-bold">2026.09.20</span>',
+                title: '駐車場利用に関する注意事項とお願い（マナー厳守）',
+                content: `<p>毎年、周辺道路への違法駐車や、隣接するドラッグストア等の商業施設駐車場への無断駐車が問題となっており、近隣住民および店舗より苦情が寄せられております。</p>
+                          <p>これらが原因で大会運営が中断、または来年度以降の開催が不可能になるケースもございます。以下の事項を必ず厳守してください。</p>
+                          <p><strong>【駐車場に関するルール】</strong></p>
+                          <p>1. 苗代小学校周辺の狭い生活道路は終日駐停車禁止です。<br>
+                          2. 商業施設（近隣薬局、コンビニ、スーパー等）への駐車は絶対におやめください。<br>
+                          3. 指定されている3箇所の「無料特設駐車場」をご利用ください。満車の場合はスタッフが空きスペースをご案内いたします。<br>
+                          4. 可能な限り自転車、または徒歩でのご来場をお願いします。各町内ごとに乗り合わせてのご来場をお勧めいたします。</p>`
+            }
+        };
+
+        function showModal(newsId) {
+            const data = newsData[newsId];
+            if (!data) return;
+
+            document.getElementById('modal-tag').innerHTML = data.tag;
+            document.getElementById('modal-title').innerText = data.title;
+            document.getElementById('modal-content').innerHTML = data.content;
+
+            const modal = document.getElementById('modal');
+            const container = document.getElementById('modal-container');
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                container.classList.remove('scale-95');
+                container.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            const container = document.getElementById('modal-container');
+            container.classList.remove('scale-100');
+            container.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 150);
+        }
+
+        // スクロール時のアニメーション効果 (Intersection Observer)
+        document.addEventListener("DOMContentLoaded", function() {
+            const fadeElements = document.querySelectorAll(".fade-in");
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("appear");
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+
+            fadeElements.forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+</html>
